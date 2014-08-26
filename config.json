@@ -1,0 +1,39 @@
+[
+    {
+        "method": "GET",
+        "url": "/foobar1",
+        "request": {
+            "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
+            "query_params": {"param1": "value1"}
+        },
+        "on_fail": {
+            "headers": {"fail": "true"},
+            "body": "sdlfkjsfd",
+            "status": 400
+        },
+        "on_success": {
+            "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
+            "body": "success",
+            "status": 200
+        }
+    },
+    {
+        "method": "PUT",
+        "url": "/foobar1",
+        "request": {
+            "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
+            "query_params": {"param1": "value1"}
+        },
+        "on_fail": {
+            "headers": {"fail": "true"},
+            "body": "sdlfkjsfd",
+            "status": 400
+        },
+        "on_success": {
+            "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
+            "body": "success",
+            "status": 200
+        }
+    }
+
+]
