@@ -1,27 +1,19 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from colorama import init
-from utils import log_request_object
+from utils import log_request_object, to_list, process_body
 from urllib.parse import urlparse
 # import urlparse
 
 # from BaseHTTPServer import HTTPServer
 
-def to_list(headers):
-    result = []
-    for header in headers:
-        for key, value in header.items():
-            result.append((key, value))
-    return result
 
 class Request:
-    def __init__(self, headers, query_params, is_headers_processed=False):
-        if is_headers_processed:
-            self.headers = headers
-        else:
-            self.headers = to_list(headers)
-
+    def __init__(self, headers, query_params, body=None):
+        self.headers = headers
+        self.body = body
         self.query_params = query_params
+
     def __eq__(self, other):
         for header in self.headers:
             flag = False
@@ -30,7 +22,15 @@ class Request:
                     flag = True
             if not flag:
                 return False
-        return self.query_params == other.query_params
+        return self.query_params == other.query_params and\
+            self.body == other.body
+
+    def __str__(self):
+        s = "headers: {}\nbody: {}\nquery_params: {}\n".format(
+            self.headers, self.body, self.query_params
+        )
+        return s
+
 
 
 class Response:
@@ -42,19 +42,19 @@ class Response:
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        validate(self)
+        self.validate()
 
     def do_POST(self):
-        validate(self)
+        self.validate()
 
     def do_HEAD(self):
-        validate(self)
+        self.validate()
 
     def do_PUT(self):
-        validate(self)
+        self.validate()
 
     def do_OPTIONS(self):
-        validate(self)
+        self.validate()
 
     def return_response(self, response):
         self.send_response(response.status)
@@ -75,51 +75,53 @@ class Handler(BaseHTTPRequestHandler):
         body = response.body + "\n"
         self.wfile.write(bytes(body, encoding))
 
-def validate(handler):
-    matched_item = None
-    query_params = {}
-    parsed_path = urlparse(handler.path)
-    for item in parsed_path.query.split('&'):
-        key, value = item.split('=')
-        query_params[key] = value
+    def validate(self):
+        matched_item = None
+        query_params = {}
+        parsed_path = urlparse(self.path)
+        if parsed_path.query:
+            for item in parsed_path.query.split('&'):
+                key, value = item.split('=')
+                query_params[key] = value
 
 
-    for item in handler.config:
-        if item['method'] == handler.command and item['url'] == parsed_path.path:
-            matched_item = item
-            break
+        for item in self.config:
+            if item['method'] == self.command and item['url'] == parsed_path.path:
+                matched_item = item
+                break
 
-    if not matched_item:
-        handler.return_response(Response(status=400,
-            body="matched error",
-            headers={}))
-        return
+        if not matched_item:
+            self.return_response(Response(status=400,
+                body="matched error",
+                headers={}))
+            return
 
-    request_from_config = Request(
-        headers=(matched_item['request'].get('headers')),
-        query_params=matched_item['request'].get('query_params')
-        )
-    request_from_server = Request(
-        headers=handler.headers.items(),
-        query_params=query_params,
-        is_headers_processed=True
-        )
-    if request_from_config != request_from_server:
-        log_request_object(request_from_config)
-        log_request_object(request_from_server)
-        on_fail = matched_item.get('on_fail', {
-            "status": 400,
-            "body": "error occured",
-            "headers": [],
-            })
-        handler.return_response(Response(**on_fail))
-    else:
-        on_success = matched_item.get('on_success', {
-            "status": 200,
-            "body": "success",
-            "headers": [],
-            })
-        handler.return_response(Response(**on_success))
+        request_from_config = Request(
+            headers=to_list(matched_item['request'].get('headers')),
+            query_params=matched_item['request'].get('query_params', {}),
+            body=matched_item['request'].get("data")
+            )
+        request_from_server = Request(
+            headers=self.headers.items(),
+            query_params=query_params,
+            body=process_body(self),
+            )
+        if request_from_config != request_from_server:
+            print(request_from_config)
+            print(request_from_server)
+            on_fail = matched_item.get('on_fail', {
+                "status": 400,
+                "body": "error occured",
+                "headers": [],
+                })
+            self.return_response(Response(**on_fail))
+        else:
+            on_success = matched_item.get('on_success', {
+                "status": 200,
+                "body": "success",
+                "headers": [],
+                })
+            self.return_response(Response(**on_success))
 
 
 if __name__ == "__main__":

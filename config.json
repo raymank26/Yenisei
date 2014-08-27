@@ -18,14 +18,18 @@
         }
     },
     {
-        "method": "PUT",
+        "method": "POST",
         "url": "/foobar1",
         "request": {
             "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
-            "query_params": {"param1": "value1"}
+            "query_params": {"param1": "value1"},
+            "data": {
+                "files": [{"length": "100", "name": "some"}],
+                "form": [{"foobarform": "foo"}]
+            }
         },
         "on_fail": {
-            "headers": {"fail": "true"},
+            "headers": [{"fail": "true"}],
             "body": "sdlfkjsfd",
             "status": 400
         },
@@ -34,6 +38,27 @@
             "body": "success",
             "status": 200
         }
+    },
+    {
+        "method": "POST",
+        "url": "/readme/",
+        "request": {
+            "data": {
+                "files": [{"length": 387, "name": "README.md"}],
+                "form": []
+            }
+        },
+        "on_fail": {
+            "headers": [{"fail": "true"}],
+            "body": "sdlfkjsfd",
+            "status": 400
+        },
+        "on_success": {
+            "headers": [],
+            "body": "success",
+            "status": 200
+        }
     }
+
 
 ]
