@@ -70,11 +70,17 @@ class RequiredField(Exception):
 SCHEMA = {
     "type": "array",
     "definitions": {
+        "headers": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        },
         "returned_response": {
             "type": "object",
             "properties": {
                 "headers": {
-                    "type": "array"
+                    "$ref": "#/definitions/headers"
                 },
                 "body": {
                     "type": "string"
@@ -88,10 +94,7 @@ SCHEMA = {
             "type": "object",
             "properties": {
                 "headers": {
-                    "type": "array",
-                    "items": {
-                        "type": "object"
-                    }, # TODO FILL
+                    "$ref": "#/definitions/headers"
                 },
                 "query_params": {
                     "type": "object"
@@ -136,17 +139,29 @@ SCHEMA = {
                                 "type": "string",
                                 "pattern": "POST|PUT"
                             },
-                            "requrest": {
+                            "request": {
                                 "type": "object",
                                 "properties": {
                                     "data": {
                                         "type": "object",
                                         "properties": {
-                                            "files":
-                                            {
+                                            "files": {
                                                 "type": "array",
-                                                "form": "array"
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "length": {
+                                                            "type": "number",
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
                                             },
+                                            "form": {
+                                                "type": "object"
+                                            }
                                         }
                                     }
                                 }

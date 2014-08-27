@@ -25,8 +25,8 @@
             "headers": [{"foobar": "foobar2"}, {"foobar": "foobar3"}],
             "query_params": {"param1": "value1"},
             "data": {
-                "files": [{"length": "100", "name": "some"}],
-                "form": [{"foobarform": "foo"}]
+                "files": [{"length": 100, "name": "some"}],
+                "form": {"foobarform": "foo"}
             }
         },
         "on_fail": {
@@ -46,7 +46,7 @@
         "request": {
             "data": {
                 "files": [{"length": 387, "name": "README.md"}],
-                "form": []
+                "form": {}
             }
         },
         "on_fail": {
