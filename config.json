@@ -7,7 +7,8 @@
             "query_params": {"param1": "value1"}
         },
         "on_fail": {
-            "headers": {"fail": "true"},
+            "headers": [{"fail": "true"}],
+            "body": "sdlfkjsfd",
             "body": "sdlfkjsfd",
             "status": 400
         },

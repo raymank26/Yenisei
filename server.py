@@ -1,8 +1,9 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from colorama import init
-from utils import log_request_object, to_list, process_body
+from utils import log_request_object, to_list, process_body, SCHEMA
 from urllib.parse import urlparse
+from jsonschema import validate
 # import urlparse
 
 # from BaseHTTPServer import HTTPServer
@@ -125,9 +126,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    # load config
     config_file = open("config.json")
     config = json.loads(config_file.read())
+    validate(config, SCHEMA)
     Handler.config = config
 
     # switch to ascii

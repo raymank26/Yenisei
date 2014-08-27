@@ -62,3 +62,109 @@ def process_body(handler):
         "files": files,
         "form": form_items
     }
+
+class RequiredField(Exception):
+    pass
+
+
+SCHEMA = {
+    "type": "array",
+    "definitions": {
+        "returned_response": {
+            "type": "object",
+            "properties": {
+                "headers": {
+                    "type": "array"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "number",
+                }
+            }
+        },
+        "base_request": {
+            "type": "object",
+            "properties": {
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    }, # TODO FILL
+                },
+                "query_params": {
+                    "type": "object"
+                }
+
+            }
+
+        },
+        "base_method": {
+            "type": "object",
+            "required": ["url", "request", "method"],
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "requrest": {
+                    "$ref": "#/definitions/base_request"
+                },
+                "on_fail": {
+                    "$ref": "#/definitions/returned_response"
+                },
+                "on_success": {
+                    "$ref": "#/definitions/returned_response"
+                }
+            }
+        }
+    },
+    "items": {
+        "allOf": [
+            {
+                "$ref": "#/definitions/base_method",
+            },
+            {
+                "anyOf": [
+                    { # explicit request method
+                        "type": "object",
+                        "properties": {
+                            "method": {
+                                "type": "string",
+                                "pattern": "POST|PUT"
+                            },
+                            "requrest": {
+                                "type": "object",
+                                "properties": {
+                                    "data": {
+                                        "type": "object",
+                                        "properties": {
+                                            "files":
+                                            {
+                                                "type": "array",
+                                                "form": "array"
+                                            },
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "method": {
+                                "type": "string",
+                                "pattern": "GET|HEAD|OPTIONS"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+
