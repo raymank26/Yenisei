@@ -10,7 +10,7 @@ tool enables you to define web server using json config without boilerplate code
 
 # Configuration
 
-JSON should include list of accepted endpoints. Each endpoint consist of following
+JSON should include list of accepted endpoints. Each endpoint consists of following
 fields:
 
 1. `method`("GET", "POST" etc.., string) - mandatory.
@@ -19,7 +19,7 @@ fields:
 4. `on_fail` and `on_success` objects are optional.
 
 
-`request` object may consts of `headers`(array of objects) and `query_params`(object).
+`request` object may defines `headers`(array of objects) and `query_params`(object).
 
 `on_fail` and `on_success` should be defined as:
 
@@ -30,10 +30,9 @@ fields:
 If `on_fail` object isn't defined then defult failure response is `{"status": 400, "body": "error occured"}`.
 If `on_success` object isn't defined then default succesive response is `{"status": 200, "body": "success"}`.
 
-In case of no one of the provided endpoints are matched then server returns `{"status": 400, "body": "match error"}.
+In case of no one of the provided endpoints are matched then server returns `{"status": 400, "body": "match error"}`.
 
-
-For config exapmle take a look at `config.json` in root of the repo.
+For config example take a look at `config.json` in root of the repo.
 
 # Installation and using
 
