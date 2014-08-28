@@ -92,7 +92,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if not matched_item:
             self.return_response(Response(status=400,
-                body="matched error",
+                body="match error",
                 headers={}))
             return
 
