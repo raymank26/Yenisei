@@ -1,9 +1,8 @@
-import json
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from colorama import init
-from utils import log_request_object, to_list, process_body, SCHEMA
+from .utils import log_request_object, to_list, process_body
+
+
+from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
-from jsonschema import validate
 # import urlparse
 
 # from BaseHTTPServer import HTTPServer
@@ -98,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         request_from_config = Request(
-            headers=to_list(matched_item['request'].get('headers')),
+            headers=to_list(matched_item['request'].get('headers', [])),
             query_params=matched_item['request'].get('query_params', {}),
             body=matched_item['request'].get("data")
             )
@@ -123,19 +122,3 @@ class Handler(BaseHTTPRequestHandler):
                 "headers": [],
                 })
             self.return_response(Response(**on_success))
-
-
-if __name__ == "__main__":
-    config_file = open("config.json")
-    config = json.loads(config_file.read())
-    validate(config, SCHEMA)
-    Handler.config = config
-
-    # switch to ascii
-    init()
-
-    # start server
-    server = HTTPServer(('localhost', 8080), Handler)
-    print('Starting server, use <Ctrl-C> to stop')
-    server.serve_forever()
-

@@ -9,7 +9,6 @@
         "on_fail": {
             "headers": [{"fail": "true"}],
             "body": "sdlfkjsfd",
-            "body": "sdlfkjsfd",
             "status": 400
         },
         "on_success": {
