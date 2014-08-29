@@ -35,6 +35,8 @@ def to_list(headers):
 
 
 def process_body(handler):
+    if handler.command not in ["POST", "PUT"]:
+        return None
     form = cgi.FieldStorage(
         fp=handler.rfile,
         headers=handler.headers,

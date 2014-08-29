@@ -72,7 +72,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "charset={}".format(encoding))
 
         self.end_headers()
-        body = response.body + "\n"
+        body = response.body
         self.wfile.write(bytes(body, encoding))
 
     def validate(self):
